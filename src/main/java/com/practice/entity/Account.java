@@ -1,11 +1,14 @@
 package com.practice.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.practice.enums.EnumGender;
 import com.practice.enums.EnumRole;
+import com.practice.enums.EnumRoleMember;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -72,9 +75,22 @@ public class Account {
 
     // giáo viên
 
+    private String teacherCode;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private CourseEntity courseEntity;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "studentRef")
+    private List<GroupMemberDetail> groupMemberships;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "enumRoleMember")
+    private EnumRoleMember enumRoleMember;
+
+
 
 
 }

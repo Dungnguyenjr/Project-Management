@@ -1,7 +1,8 @@
 package com.practice.controller;
 
-import com.practice.req.BatchReq;
+import com.practice.req.BatchCreatReq;
 import com.practice.entity.BatchEntity;
+import com.practice.req.BatchUpdateReq;
 import com.practice.service.BatchService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ public class BatchController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<?> createBatch(@Valid @RequestBody BatchReq request) {
+    public ResponseEntity<?> createBatch(@Valid @RequestBody BatchCreatReq request) {
         try {
             BatchEntity nameAlready = batchService.getBatchByName(request.getName());
             if (nameAlready != null) {
@@ -43,11 +44,11 @@ public class BatchController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<?> updateBatch(@Valid @RequestParam("id") Long id, @Valid @RequestBody BatchReq request) {
+    public ResponseEntity<?> updateBatch(@Valid @RequestParam("id") Long id, @Valid @RequestBody BatchUpdateReq batchUpdateReq) {
         try {
             BatchEntity idCheck = batchService.idCheck(id);
             if (idCheck != null) {
-                BatchEntity response = batchService.updateBatch(id, request);
+                BatchEntity response = batchService.updateBatch(id, batchUpdateReq);
                 return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", response));
             } else {
                 return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("message", "Đợt không tồn tại!"));

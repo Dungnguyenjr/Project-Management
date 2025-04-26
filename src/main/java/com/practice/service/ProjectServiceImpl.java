@@ -8,6 +8,7 @@ import com.practice.repository.ProjectRepository;
 import com.practice.req.CriteriaCreateReq;
 import com.practice.req.ProjectCreateReq;
 import com.practice.req.ProjectSearchReq;
+import com.practice.req.ProjectUpdateReq;
 import com.practice.specification.ProjectSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectName(projectCreateReq.getProjectName());
         project.setDescription(projectCreateReq.getDescription());
         project.setContent(projectCreateReq.getContent());
+        project.setStatus(projectCreateReq.getStatus());
+
 
         // Lặp qua danh sách Criteria và thêm pr project
         for (CriteriaCreateReq criteriaCreateReq : projectCreateReq.getCriteria()) {
@@ -50,16 +53,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO updateProject(Integer id, ProjectCreateReq projectCreateReq) {
+    public ProjectDTO updateProject(Integer id, ProjectUpdateReq projectUpdateReq) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        project.setProjectName(projectCreateReq.getProjectName());
-        project.setDescription(projectCreateReq.getDescription());
-        project.setContent(projectCreateReq.getContent());
+        project.setProjectName(projectUpdateReq.getProjectName());
+        project.setDescription(projectUpdateReq.getDescription());
+        project.setContent(projectUpdateReq.getContent());
+        project.setStatus(projectUpdateReq.getStatus());
+
 
         // Lấy các ID Criteria đã gửi lên
-        List<Integer> incomingIds = projectCreateReq.getCriteria().stream()
+        List<Integer> incomingIds = projectUpdateReq.getCriteria().stream()
                 .map(CriteriaCreateReq::getId)
                 .filter(Objects::nonNull)
                 .toList();
@@ -68,7 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.getCriteria().removeIf(existing -> existing.getId() != null && !incomingIds.contains(existing.getId()));
 
 
-        for (CriteriaCreateReq criteriaCreateReq : projectCreateReq.getCriteria()) {
+        for (CriteriaCreateReq criteriaCreateReq : projectUpdateReq.getCriteria()) {
             if (criteriaCreateReq.getId() == null) {
 
                 Criteria newCrit = new Criteria();
@@ -96,10 +101,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
 
-        // Xóa các tiêu chí liên quan (nếu có)
         project.getCriteria().clear();
-
-        // Xóa đề tài
         projectRepository.delete(project);
 
         return modelMapper.map(project, ProjectDTO.class);
@@ -124,6 +126,14 @@ public class ProjectServiceImpl implements ProjectService {
         result.setTotalPages(page.getTotalPages());
         result.setLast(page.isLast());
         return result;
+    }
+
+    @Override
+    public List<ProjectDTO> getAllProjects() {
+        List<Project> projects = projectRepository.findAll(Sort.by("createDate").descending());
+        return projects.stream()
+                .map(p -> modelMapper.map(p, ProjectDTO.class))
+                .toList();
     }
 
 

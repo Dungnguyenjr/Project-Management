@@ -216,7 +216,7 @@ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundEx
         account.setAddress(teacherCreateReq.getAddress());
         account.setUuid(UUID.randomUUID().toString());
         account.setNote(teacherCreateReq.getNote());
-        account.setStudentCode(teacherCreateReq.getStudentCode());
+        account.setStudentCode(teacherCreateReq.getTeacherCode());
 
         // Gán role từ request
         account.setRole(teacherCreateReq.getRole());
@@ -251,7 +251,7 @@ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundEx
         account.setGender(teacherCreateReq.getGender());
         account.setAddress(teacherCreateReq.getAddress());
         account.setNote(teacherCreateReq.getNote());
-        account.setStudentCode(teacherCreateReq.getStudentCode());
+        account.setStudentCode(teacherCreateReq.getTeacherCode());
 
         // Update role
         account.setRole(teacherCreateReq.getRole());

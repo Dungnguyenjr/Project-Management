@@ -3,7 +3,7 @@ package com.practice.req;
 import lombok.Data;
 
 @Data
-public class ClassCreateReq {
+public class ClassUpdateReq {
 
     private String className;
 

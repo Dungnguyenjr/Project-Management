@@ -4,6 +4,7 @@ import com.practice.dto.ClassDTO;
 import com.practice.entity.ClassEntity;
 import com.practice.repository.ClassRepository;
 import com.practice.req.ClassCreateReq;
+import com.practice.req.ClassUpdateReq;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -70,14 +71,14 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public ClassDTO updateClass(int id, ClassCreateReq classCreateReq){
+    public ClassDTO updateClass(int id, ClassUpdateReq classUpdateReq){
         ClassEntity classEntity = classRepo.findById(id)
                 .orElse(null);
         if (classEntity == null) {
             return null;
         }
-        classEntity.setClassName(classCreateReq.getClassName());
-        classEntity.setCourse(classCreateReq.getCourse());
+        classEntity.setClassName(classUpdateReq.getClassName());
+        classEntity.setCourse(classUpdateReq.getCourse());
         return modelMapper.map(classRepo.save(classEntity), ClassDTO.class);
     }
 

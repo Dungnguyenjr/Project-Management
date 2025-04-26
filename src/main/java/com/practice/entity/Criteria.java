@@ -1,6 +1,7 @@
 package com.practice.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,5 +19,6 @@ public class Criteria {
 
     @ManyToOne
     @JoinColumn(name= "project_id")
+    @JsonBackReference
     private Project project;
 }

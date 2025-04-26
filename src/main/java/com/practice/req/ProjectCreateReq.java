@@ -14,6 +14,6 @@ public class ProjectCreateReq {
 
     private EnumProjectStatus status;
 
-    private Date createDate;
+
     private List<CriteriaCreateReq> criteria;
 }

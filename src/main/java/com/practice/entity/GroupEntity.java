@@ -1,27 +1,38 @@
 package com.practice.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Entity
 @Data
-@Table
-public class Group {
+@Table(name = "`groups`")
+public class GroupEntity {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @OneToMany
-    private BatchEntity batchEntity ( trong bảng có tên là name lấy tên )
+    @ManyToOne
+    @JoinColumn(name = "batch_id") // liên kết tới đợt
+    private BatchEntity batch;
 
-    private String GroupName;
+    @Column(name = "group_name")
+    private String groupName;
 
-    @OneToMany
-    private Project project ( trong có private String projectName; lấy projectName)
+    @ManyToOne
+    @JoinColumn(name = "project_id") // liên kết tới đề tài
+    private Project project;
 
-        cái nyà là tí nữa làm bảng lấy danh sách sv xong nơi này chưa số lượng sinh viên
-    private Project project ( trong có private String projectName; lấy projectName)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<GroupMemberDetail> members;
 
-
+    public int getStudentCount() {
+        if (members == null) return 0;
+        return (int) members.stream()
+                .filter(detail -> detail.getStudent() != null && "STUDENT".equals(detail.getStudent().getRole().name()))
+                .count();
+    }
 }

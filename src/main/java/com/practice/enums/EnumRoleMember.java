@@ -1,4 +1,6 @@
 package com.practice.enums;
 
-public class Enummember {
+public enum EnumRoleMember {
+    LEADER,
+    MEMBER;
 }

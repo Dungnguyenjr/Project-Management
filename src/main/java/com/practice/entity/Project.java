@@ -1,11 +1,13 @@
 package com.practice.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.practice.enums.EnumProjectStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,12 +30,19 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private EnumProjectStatus status;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createDate;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createDate;
 
-//    cascade = ALL giúp thêm/sửa tiêu chí khi thêm/sửa đề tài
-//            orphanRemoval = true giúp khi bạn xóa 1 tiêu chí khỏi list, nó sẽ tự bị xóa khỏi DB
-@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-private List<Criteria> criteria = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "year_id")
+    private Year year;
+
+
+    //    cascade = ALL giúp thêm/sửa tiêu chí khi thêm/sửa đề tài
+    //            orphanRemoval = true giúp khi bạn xóa 1 tiêu chí khỏi list, nó sẽ tự bị xóa khỏi DB
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Criteria> criteria = new ArrayList<>();
 
 }

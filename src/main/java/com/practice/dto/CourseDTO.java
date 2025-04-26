@@ -10,5 +10,6 @@ public class CourseDTO {
     private int id;
 
     private String courseName;
+    private List<ClassDTO> classEntities;
 
 }

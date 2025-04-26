@@ -1,12 +1,11 @@
 package com.practice.req;
 
-import com.practice.entity.Project;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class YearCreateReq {
+public class YearUpdateReq {
 
     private int id;
 

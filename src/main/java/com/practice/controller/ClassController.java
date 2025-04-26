@@ -2,6 +2,7 @@ package com.practice.controller;
 
 import com.practice.dto.ClassDTO;
 import com.practice.req.ClassCreateReq;
+import com.practice.req.ClassUpdateReq;
 import com.practice.service.ClassService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -56,8 +57,8 @@ public class ClassController {
 
     @PutMapping ("/{id}")
     public ResponseEntity<?> updateClass(@PathVariable int id,
-                                         @RequestBody ClassCreateReq classCreateReq) {
-        ClassDTO classDTO = classService.updateClass(id, classCreateReq);
+                                         @RequestBody ClassUpdateReq classUpdateReq) {
+        ClassDTO classDTO = classService.updateClass(id, classUpdateReq);
         if (classDTO == null) {
             return new ResponseEntity<>("Không tìm thấy id: " + id, HttpStatus.BAD_REQUEST);
         }

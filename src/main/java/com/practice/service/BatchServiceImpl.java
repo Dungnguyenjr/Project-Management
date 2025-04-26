@@ -2,7 +2,8 @@ package com.practice.service;
 
 import com.practice.entity.BatchEntity;
 import com.practice.repository.BatchRepository;
-import com.practice.req.BatchReq;
+import com.practice.req.BatchCreatReq;
+import com.practice.req.BatchUpdateReq;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,13 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public BatchEntity createBatch(BatchReq request) {
+    public BatchEntity createBatch(BatchCreatReq batchCreatReq) {
         try {
             BatchEntity batchEntity = new BatchEntity();
-            batchEntity.setName(request.getName());
-            batchEntity.setYear(request.getYear());
-            batchEntity.setDateStart(request.getDateStart());
-            batchEntity.setDateEnd(request.getDateEnd());
+            batchEntity.setName(batchCreatReq.getName());
+            batchEntity.setYear(batchCreatReq.getYear());
+            batchEntity.setDateStart(batchCreatReq.getDateStart());
+            batchEntity.setDateEnd(batchCreatReq.getDateEnd());
 
             return batchRepo.save(batchEntity);
         } catch (Exception e) {
@@ -46,14 +47,14 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public BatchEntity updateBatch(Long id,BatchReq request) {
+    public BatchEntity updateBatch(Long id, BatchUpdateReq batchUpdateReq) {
         try {
             BatchEntity batchEntity = new BatchEntity();
             batchEntity.setId(id);
-            batchEntity.setName(request.getName());
-            batchEntity.setYear(request.getYear());
-            batchEntity.setDateStart(request.getDateStart());
-            batchEntity.setDateEnd(request.getDateEnd());
+            batchEntity.setName(batchUpdateReq.getName());
+            batchEntity.setYear(batchUpdateReq.getYear());
+            batchEntity.setDateStart(batchUpdateReq.getDateStart());
+            batchEntity.setDateEnd(batchUpdateReq.getDateEnd());
 
             return batchRepo.save(batchEntity);
         } catch (Exception e) {

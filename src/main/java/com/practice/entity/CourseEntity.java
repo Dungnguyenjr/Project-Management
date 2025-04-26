@@ -1,5 +1,6 @@
 package com.practice.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,5 +19,6 @@ public class CourseEntity {
     private String courseName;
 
     @OneToMany(mappedBy = "courseEntity")
+    @JsonManagedReference
     List<ClassEntity> classEntities = new ArrayList<>();
 }

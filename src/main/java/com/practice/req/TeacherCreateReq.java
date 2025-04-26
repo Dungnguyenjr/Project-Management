@@ -36,7 +36,7 @@ public class TeacherCreateReq {
 
     private String note;
 
-    private String studentCode;
+    private String teacherCode;
 
     private long fieldId;
 

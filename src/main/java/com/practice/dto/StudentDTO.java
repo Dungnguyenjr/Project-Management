@@ -2,6 +2,7 @@ package com.practice.dto;
 
 import com.practice.enums.EnumGender;
 import com.practice.enums.EnumRole;
+import com.practice.enums.EnumRoleMember;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -10,6 +11,7 @@ import java.util.Date;
 
 @Data
 public class StudentDTO {
+    private int id;
 
     @NotNull
     private String username;
@@ -50,4 +52,5 @@ public class StudentDTO {
     private int classEntityId;
 
     private long batchEntityId;
+
 }
