@@ -18,25 +18,26 @@ public class ConfigSwagger {
     public OpenAPI openAPI() {
         Server prodServer = new Server();
         prodServer.setUrl("");
-        prodServer.setDescription("Production Server");
+        prodServer.setDescription("Server chạy hệ thống quản lý đồ án tốt nghiệp");
 
         Contact contact = new Contact();
-        contact.setEmail("support@bks.center");
-        contact.setName("BKS Support Team");
-        contact.setUrl("https://bks.center/suppor");
+        contact.setEmail("ngvietdung23k1@gmail.com");
+        contact.setName("Nguyễn Việt Dũng");
+        contact.setUrl("https://github.com/Dungnguyenjr");
 
         License mitLicense = new License()
                 .name("MIT License")
                 .url("https://opensource.org/licenses/MIT");
 
         Info info = new Info()
-                .title("BKS - Project Management API")
+                .title("Hệ thống quản lý đồ án tốt nghiệp")
                 .version("1.0")
                 .contact(contact)
-                .description("This is the API documentation for the BKS Project Management system. Use this documentation to understand and test the APIs.")
-                .termsOfService("https://www.bezkoder.com/terms")
+                .description("Tài liệu API cho hệ thống quản lý đồ án tốt nghiệp. Hệ thống hỗ trợ sinh viên, giảng viên và quản trị viên trong việc đăng ký, phân công và theo dõi tiến độ đồ án.")
+                .termsOfService("https://github.com/Dungnguyenjr")
                 .license(mitLicense);
 
         return new OpenAPI().info(info).servers(List.of(prodServer));
     }
+
 }
