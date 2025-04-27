@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +23,21 @@ import java.util.List;
 @RequestMapping("api/project")
 @CrossOrigin("*")
 public class ProjectController {
+
     @Autowired
     private ProjectService projectService;
 
+    private boolean hasRoleTeacher() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_TEACHER"));
+    }
+
     @PostMapping
-    public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectCreateReq projectCreateReq) {
+    public ResponseEntity<?> createProject(@RequestBody ProjectCreateReq projectCreateReq) {
+        if (!hasRoleTeacher()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền thực hiện hành động này");
+        }
         try {
             ProjectDTO newProject = projectService.createProject(projectCreateReq);
             return new ResponseEntity<>(newProject, HttpStatus.CREATED);
@@ -36,7 +48,10 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Integer id, @RequestBody ProjectUpdateReq projectUpdateReq) {
+    public ResponseEntity<?> updateProject(@PathVariable Integer id, @RequestBody ProjectUpdateReq projectUpdateReq) {
+        if (!hasRoleTeacher()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền thực hiện hành động này");
+        }
         try {
             ProjectDTO updatedProject = projectService.updateProject(id, projectUpdateReq);
             return new ResponseEntity<>(updatedProject, HttpStatus.OK);
@@ -47,7 +62,10 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteProject(@PathVariable Integer id) {
+        if (!hasRoleTeacher()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền thực hiện hành động này");
+        }
         try {
             projectService.deleteProject(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -67,8 +85,4 @@ public class ProjectController {
     public ResponseEntity<List<ProjectDTO>> getAllProjects() {
         return ResponseEntity.ok(projectService.getAllProjects());
     }
-
-
-
-
 }

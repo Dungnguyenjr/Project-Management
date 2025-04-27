@@ -1,6 +1,7 @@
 package com.practice.service;
 
 import com.practice.dto.GroupDTO;
+import com.practice.dto.GroupListDTO;
 import com.practice.dto.StudentDTO;
 import com.practice.dto.StudentGroupDTO;
 import com.practice.entity.Account;
@@ -16,7 +17,12 @@ import com.practice.req.GroupCreateReq;
 import com.practice.req.GroupUpdateReq;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+
+
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +39,18 @@ public class GroupServiceImpl implements GroupService {
     private final ModelMapper modelMapper;
 
 
-
+    public Page<GroupListDTO> getAllGroups(Pageable pageable) {
+        return groupRepo.findAllGroupsWithBatchAndProject(pageable)
+                .map(group -> {
+                    GroupListDTO dto = new GroupListDTO();
+                    dto.setId(group.getId());
+                    dto.setBatchName(group.getBatch().getName());
+                    dto.setGroupName(group.getGroupName());
+                    dto.setProjectName(group.getProject().getProjectName());
+                    dto.setStudentCount(group.getStudentCount());
+                    return dto;
+                });
+    }
 
     @Override
     public GroupDTO createGroup(GroupCreateReq groupCreateReq) {

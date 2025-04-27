@@ -4,6 +4,10 @@ import com.practice.dto.GroupReportDTO;
 import com.practice.req.GroupReportReq;
 import com.practice.service.GroupReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,18 +19,31 @@ public class GroupReportController {
     @Autowired
     private GroupReportService groupReportService;
 
+    private boolean hasRoleTeacher() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_TEACHER"));
+    }
+
     @PostMapping
-    public GroupReportDTO createReport(@RequestBody GroupReportReq request) {
-        return groupReportService.createReport(request);
+    public ResponseEntity<?> createReport(@RequestBody GroupReportReq request) {
+        if (!hasRoleTeacher()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Bạn không có quyền thực hiện hành động này");
+        }
+        GroupReportDTO createdReport = groupReportService.createReport(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
     }
 
     @GetMapping("/group/{groupId}")
-    public List<GroupReportDTO> getReportsByGroupId(@PathVariable Long groupId) {
-        return groupReportService.getReportsByGroupId(groupId);
+    public ResponseEntity<List<GroupReportDTO>> getReportsByGroupId(@PathVariable Long groupId) {
+        List<GroupReportDTO> reports = groupReportService.getReportsByGroupId(groupId);
+        return ResponseEntity.ok(reports);
     }
 
     @GetMapping("/{id}")
-    public GroupReportDTO getReportById(@PathVariable Long id) {
-        return groupReportService.getReportById(id);
+    public ResponseEntity<GroupReportDTO> getReportById(@PathVariable Long id) {
+        GroupReportDTO report = groupReportService.getReportById(id);
+        return ResponseEntity.ok(report);
     }
 }

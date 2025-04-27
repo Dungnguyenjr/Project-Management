@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface GroupReportRepository extends JpaRepository<GroupReport, Long> {
     List<GroupReport> findByGroup_Id(Long groupId);
+
 }

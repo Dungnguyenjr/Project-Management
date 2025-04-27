@@ -1,15 +1,18 @@
 package com.practice.controller;
 
 import com.practice.dto.GroupMemberDetailDTO;
+import com.practice.dto.GroupMemberDetailFullDTO;
 import com.practice.req.GroupMemberDetailReq;
 import com.practice.service.GroupMemberDetailService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
+@Tag(name = "GroupMemberDetailController")
 @RestController
 @RequestMapping("/api/group-member-details")
 public class GroupMemberDetailController {
@@ -42,4 +45,25 @@ public class GroupMemberDetailController {
         List<GroupMemberDetailDTO> details = groupMemberDetailService.getDetailsByGroupId(groupId);
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
+
+
+    @PostMapping("/upload-report")
+    public ResponseEntity<String> uploadIndividualReport(
+            @RequestParam("groupMemberId") Long groupMemberId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            String fileName = groupMemberDetailService.uploadReportFile(groupMemberId, file);
+            return ResponseEntity.ok("File uploaded: " + fileName);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file");
+        }
+    }
+
+    @GetMapping("/group-member-full/{groupId}")
+    public ResponseEntity<GroupMemberDetailFullDTO> getGroupMemberFull(@PathVariable Long groupId) {
+        GroupMemberDetailFullDTO result = groupMemberDetailService.getGroupMemberDetailsFull(groupId);
+        return ResponseEntity.ok(result);
+    }
+
+
 }

@@ -33,7 +33,7 @@ public class ConfigSecurity {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER", "ADMIN")
-                        .requestMatchers("/api/student/**"). hasAnyRole("STUDENT", "TEACHER")
+                        .requestMatchers("/api/student/**"). hasAnyRole("STUDENT")
 
                         .anyRequest().permitAll()
                 )

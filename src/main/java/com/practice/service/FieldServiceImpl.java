@@ -3,6 +3,8 @@ package com.practice.service;
 import com.practice.dto.FieldDTO;
 import com.practice.entity.Field;
 import com.practice.repository.FieldRepository;
+import com.practice.req.FieldCreateReq;
+import com.practice.req.FieldUpdateReq;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,30 +39,27 @@ public class FieldServiceImpl implements FieldService {
 
     // Thêm ngành nghề
     @Override
-    public FieldDTO createField(FieldDTO fieldDTO) {
-        Field field = modelMapper.map(fieldDTO, Field.class);
+    public FieldDTO createField(FieldCreateReq fieldCreateReq) {
+        Field field = modelMapper.map(fieldCreateReq, Field.class);
         return modelMapper.map(fieldRepository.save(field), FieldDTO.class);
     }
 
-    //Sửa ngành nghề
+    // Sửa ngành nghề
     @Override
-    public FieldDTO updateField(Long id, FieldDTO fieldDTO) {
+    public FieldDTO updateField(Long id, FieldUpdateReq fieldUpdateReq) {
         Field field = fieldRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Field not found with id: " + id));
-        field.setName(fieldDTO.getName());
-        field.setCode(fieldDTO.getCode());
+        field.setName(fieldUpdateReq.getName());
+        field.setCode(fieldUpdateReq.getCode());
         return modelMapper.map(fieldRepository.save(field), FieldDTO.class);
     }
 
-    // xoa nganh nghe
+    // Xóa ngành nghề
     @Override
     public FieldDTO deleteField(Long id) {
-
         Field field = fieldRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Field not found with id: " + id));
-
         fieldRepository.delete(field);
         return modelMapper.map(field, FieldDTO.class);
-
     }
 }
