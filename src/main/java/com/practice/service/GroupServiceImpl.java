@@ -39,22 +39,37 @@ public class GroupServiceImpl implements GroupService {
     private final ModelMapper modelMapper;
 
 
+    @Override
     public Page<GroupListDTO> getAllGroups(Pageable pageable) {
         return groupRepo.findAllGroupsWithBatchAndProject(pageable)
                 .map(group -> {
                     GroupListDTO dto = new GroupListDTO();
                     dto.setId(group.getId());
-                    dto.setBatchName(group.getBatch().getName());
-                    dto.setGroupName(group.getGroupName());
-                    dto.setProjectName(group.getProject().getProjectName());
+
+                    if (group.getBatch() != null) {
+                        String batchName = group.getBatch().getName();
+                        if (group.getBatch().getDateStart() != null && group.getBatch().getDateEnd() != null) {
+                            batchName += " " + group.getBatch().getDateStart() + " - " + group.getBatch().getDateEnd();
+                        }
+                        dto.setBatchName(batchName);
+                    } else {
+                        dto.setBatchName("Không có đợt");
+                    }
+                    dto.setGroupName(group.getGroupName() != null ? group.getGroupName() : "Không có tên nhóm");
+                    if (group.getProject() != null) {
+                        dto.setProjectName(group.getProject().getProjectName());
+                    } else {
+                        dto.setProjectName("Chưa có đề tài");
+                    }
                     dto.setStudentCount(group.getStudentCount());
+
                     return dto;
                 });
     }
 
+
     @Override
     public GroupDTO createGroup(GroupCreateReq groupCreateReq) {
-        // Tạo đối tượng GroupEntity
         GroupEntity group = new GroupEntity();
         group.setGroupName(groupCreateReq.getGroupName());
         group.setBatch(batchRepo.findById(groupCreateReq.getBatchId()).orElseThrow());
@@ -205,3 +220,25 @@ public class GroupServiceImpl implements GroupService {
 
 }
 
+//ghi nhớ
+//        "pageable": {
+//                "pageNumber": 0,       // Trang hiện tại (bắt đầu từ 0)
+//                "pageSize": 10,        // Số phần tử mỗi trang
+//                "offset": 0,           // Vị trí bắt đầu trong danh sách tổng (0 = phần tử đầu tiên)
+//                "paged": true,         // Có sử dụng phân trang
+//                "unpaged": false,      // Không phải là truy vấn không phân trang
+//                "sort": {
+//                "empty": true,       // Không sắp xếp
+//                "sorted": false,
+//                "unsorted": true
+//                }
+//                }
+// cá trường ngoài "last": true,               // Đây là trang cuối cùng
+//                "totalElements": 3,         // Tổng số phần tử tìm được (tổng nhóm)
+//                "totalPages": 1,            // Tổng số trang (vì có 3 nhóm và pageSize = 10 => chỉ cần 1 trang)
+//                "size": 10,                 // Kích thước mỗi trang (pageSize = 10)
+//                "number": 0,                // Trang hiện tại (trang đầu là 0)
+//                "first": true,              // Đây là trang đầu tiên
+//                "numberOfElements": 3,      // Số phần tử trong trang hiện tại (3 nhóm)
+//                "empty": false              // Trang này không rỗng
+//
