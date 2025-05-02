@@ -1,5 +1,6 @@
 package com.practice.controller;
 
+import com.practice.dto.GroupDetailDTO;
 import com.practice.dto.GroupListDTO;
 import com.practice.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,4 +22,13 @@ public class StudentGroupController {
     ) {
         return groupService.getAllGroups(PageRequest.of(page, size));
     }
+
+    @GetMapping("/{groupId}/detail")
+    public GroupDetailDTO getGroupDetail(
+            @PathVariable Long groupId,
+            @RequestParam String accountId) {
+        return groupService.getGroupDetail(groupId, accountId);
+    }
+
+
 }

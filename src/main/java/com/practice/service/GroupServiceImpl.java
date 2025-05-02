@@ -1,18 +1,12 @@
 package com.practice.service;
 
-import com.practice.dto.GroupDTO;
-import com.practice.dto.GroupListDTO;
-import com.practice.dto.StudentDTO;
-import com.practice.dto.StudentGroupDTO;
+import com.practice.dto.*;
 import com.practice.entity.Account;
 import com.practice.entity.GroupEntity;
 import com.practice.entity.GroupMemberDetail;
 import com.practice.enums.EnumRoleMember;
 import com.practice.exception.BadRequestException;
-import com.practice.repository.AccountRepository;
-import com.practice.repository.BatchRepository;
-import com.practice.repository.GroupRepository;
-import com.practice.repository.ProjectRepository;
+import com.practice.repository.*;
 import com.practice.req.GroupCreateReq;
 import com.practice.req.GroupUpdateReq;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 
 
@@ -37,6 +32,8 @@ public class GroupServiceImpl implements GroupService {
     private final ProjectRepository projectRepo;
     private final AccountRepository accountRepo;
     private final ModelMapper modelMapper;
+    private final GroupMemberDetailRepository groupMemberDetailRepo;
+
 
 
     @Override
@@ -66,6 +63,83 @@ public class GroupServiceImpl implements GroupService {
                     return dto;
                 });
     }
+
+    @Override
+    public GroupDetailDTO getGroupDetail(Long groupId, String accountId) {
+        GroupEntity group = groupRepo.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        // Lấy danh sách thành viên nhóm
+        List<GroupMemberDetail> groupMembers = groupMemberDetailRepo.findByGroup_Id(groupId);
+
+        List<GroupMemberDetailDTO> groupMemberDetailDTOS = groupMembers.stream().map(member -> {
+            GroupMemberDetailDTO dto = new GroupMemberDetailDTO();
+            dto.setId(member.getId());
+            dto.setGroupId(groupId);
+            dto.setGroupName(group.getGroupName());
+            dto.setStudentId(member.getStudent().getId());
+            dto.setStudentName(member.getStudent().getFullName());
+            dto.setStudentCode(member.getStudent().getStudentCode());
+            dto.setIndividualReport(member.getIndividualReport());
+            dto.setPersonalScore(member.getPersonalScore());
+            dto.setGroupScore(member.getGroupScore());
+            dto.setRoleMember(
+                    member.getStudent().getEnumRoleMember() != null
+                            ? member.getStudent().getEnumRoleMember().name()
+                            : null
+            );
+            return dto;
+        }).collect(Collectors.toList());
+
+        // Lấy danh sách công việc của nhóm
+        List<GroupTaskDTO> taskDTOs = group.getGroupTasks().stream().map(task -> {
+            GroupTaskDTO dto = new GroupTaskDTO();
+            dto.setId(task.getId());
+            dto.setTaskName(task.getTaskName());
+            dto.setDescription(task.getDescription());
+            dto.setStartDate(task.getStartDate());
+            dto.setEndDate(task.getEndDate());
+            dto.setGroupId(groupId);
+            dto.setStatus(task.getStatus());
+
+            List<TaskAssignmentDTO> assignments = task.getAssignments().stream().map(assign -> {
+                TaskAssignmentDTO a = new TaskAssignmentDTO();
+                a.setAccountId(assign.getAccount().getId());
+                a.setStudentCode(assign.getAccount().getStudentCode());
+                a.setFullName(assign.getAccount().getFullName());
+                a.setStatus(assign.getStatus());
+                a.setNote(assign.getNote());
+                return a;
+            }).collect(Collectors.toList());
+
+            dto.setAssignments(assignments);
+            return dto;
+        }).collect(Collectors.toList());
+
+
+        // Kiểm tra người dùng hiện tại có phải là trưởng nhóm không
+        boolean isLeader = groupMembers.stream()
+                .anyMatch(m ->
+                        String.valueOf(m.getStudent().getId()).equals(accountId) &&
+                                EnumRoleMember.LEADER.equals(m.getStudent().getEnumRoleMember())
+                );
+
+
+        // Tạo DTO trả về
+        GroupDetailDTO detailDTO = new GroupDetailDTO();
+        detailDTO.setGroupName(group.getGroupName());
+        detailDTO.setTopicName(group.getProject().getProjectName());
+        detailDTO.setBatchName(group.getBatch().getName());
+        detailDTO.setStartDate(group.getBatch().getDateStart());
+        detailDTO.setEndDate(group.getBatch().getDateEnd());
+        detailDTO.setGroupMemberDetailDTOS(groupMemberDetailDTOS);
+        detailDTO.setGroupTasks(taskDTOs);
+
+        return detailDTO;
+    }
+
+
+
 
 
     @Override

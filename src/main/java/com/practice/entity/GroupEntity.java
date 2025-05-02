@@ -29,6 +29,10 @@ public class GroupEntity {
     @JsonManagedReference
     private List<GroupMemberDetail> members;
 
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<GroupTask> groupTasks;
+
+
     public int getStudentCount() {
         if (members == null) return 0;
         return (int) members.stream()

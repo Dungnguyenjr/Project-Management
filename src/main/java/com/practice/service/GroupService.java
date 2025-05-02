@@ -1,6 +1,7 @@
 package com.practice.service;
 
 import com.practice.dto.GroupDTO;
+import com.practice.dto.GroupDetailDTO;
 import com.practice.dto.GroupListDTO;
 import com.practice.req.GroupCreateReq;
 import com.practice.req.GroupUpdateReq;
@@ -14,8 +15,8 @@ public interface GroupService {
     GroupDTO createGroup(GroupCreateReq groupCreateReq);
     GroupDTO updateGroup(long id, GroupUpdateReq groupUpdateReq);
     void deleteGroup(long id);
-//    GroupDTO getGroupById(int id);
-//    List<GroupDTO> getAllGroups(); // Có thể thêm phân trang nếu cần
 
     Page<GroupListDTO> getAllGroups(Pageable pageable);
+    GroupDetailDTO getGroupDetail(Long groupId, String accountId);
+
 }
