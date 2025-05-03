@@ -12,11 +12,16 @@ import java.util.List;
 @Table(name = "course_entity")
 public class CourseEntity {
 
+    //+	STT, (*)Tên khóa, năm bắt đầu
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String courseName;
+
+    @Column(name = "start_year")
+    private int startYear;
 
     @OneToMany(mappedBy = "courseEntity")
     @JsonManagedReference

@@ -2,10 +2,7 @@ package com.practice.service;
 
 import com.practice.entity.Account;
 import com.practice.enums.EnumRole;
-import com.practice.req.AccountCreateReq;
-import com.practice.req.AccountUpdateReq;
-import com.practice.req.StudentCreateReq;
-import com.practice.req.TeacherCreateReq;
+import com.practice.req.*;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -23,11 +20,18 @@ public interface AccountService extends UserDetailsService {
     void deleteAccount(int id);
 
     Account createTeacher(TeacherCreateReq teacherCreateReq);
-    Account updateTeacher(TeacherCreateReq teacherCreateReq, int id);
+    Account updateTeacher(TeacherUpdateReq teacherUpdateReq, int id);
 
     List<Account> getAccountsByRole(EnumRole role);
 
     List<Account> getUsersWithPagination(int pageIndex, int pageSize);
+
+    Account changePassword(String jwt, ChangePasswordReq changePasswordReq);
+
+
+
+
+
 
 
 }

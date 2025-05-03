@@ -1,7 +1,9 @@
 package com.practice.controller;
 
 import com.practice.entity.Account;
+import com.practice.enums.EnumRole;
 import com.practice.req.TeacherCreateReq;
+import com.practice.req.TeacherUpdateReq;
 import com.practice.service.AccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Teacher Controller")
 @RestController
-@RequestMapping("/api/admin/teacher")
+@RequestMapping("/api/teacher")
 public class TeacherController {
 
     @Autowired
@@ -27,9 +29,18 @@ public class TeacherController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Account> updateTeacher(@PathVariable int id,
-                                                 @RequestBody TeacherCreateReq teacherCreateReq) {
-        Account updatedAccount = accountService.updateTeacher(teacherCreateReq, id);
+                                                 @RequestBody TeacherUpdateReq teacherUpdateReq) {
+        Account updatedAccount = accountService.updateTeacher(teacherUpdateReq, id);
         return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Account> getTeacherInfo(@RequestHeader("Authorization") String jwt) throws Exception {
+        Account account = accountService.findAccountByJwtToken(jwt);
+        if (account.getRole() != EnumRole.TEACHER) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(account);
     }
 
 }

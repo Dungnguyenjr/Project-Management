@@ -14,6 +14,8 @@ import lombok.Setter;
 @Table(name = "field")
 public class Field {
 
+    //chọn chuyên ngành  +	STT, Mã ngành nghề, (*)Ngành nghề
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

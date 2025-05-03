@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassEntity {
+
+    //+	STT, (*)Tên lớp, Khóa
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

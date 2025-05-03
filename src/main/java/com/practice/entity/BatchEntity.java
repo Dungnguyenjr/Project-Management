@@ -11,6 +11,8 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "batch")
 public class BatchEntity {
+
+    //+	STT, (*) ÁP dụng đề tài của năm, (*)Tên đợt , Thời gian bắt đầu, thời gian kết thúc
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

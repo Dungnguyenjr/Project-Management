@@ -1,6 +1,7 @@
 package com.practice.controller;
 
 import com.practice.entity.Account;
+import com.practice.enums.EnumRole;
 import com.practice.req.StudentCreateReq;
 import com.practice.req.TeacherCreateReq;
 import com.practice.service.AccountService;
@@ -30,6 +31,15 @@ public class StudentController {
                                                  @RequestBody StudentCreateReq studentCreateReq) {
         Account updateStudent = accountService.updateStudent(studentCreateReq, id);
         return new ResponseEntity<>(updateStudent, HttpStatus.OK);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Account> getStudentInfo(@RequestHeader("Authorization") String jwt) throws Exception {
+        Account account = accountService.findAccountByJwtToken(jwt);
+        if (account.getRole() != EnumRole.STUDENT) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(account);
     }
 
 }

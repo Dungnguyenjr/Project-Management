@@ -61,5 +61,12 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getAccountsByRole(EnumRole.ADMIN));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<Account> getMyAccount(@RequestHeader("Authorization") String jwt) throws Exception {
+        Account account = accountService.findAccountByJwtToken(jwt);
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+
 
 }

@@ -4,11 +4,9 @@ import com.practice.entity.*;
 import com.practice.enums.EnumGender;
 import com.practice.enums.EnumRole;
 import com.practice.configuration.JwtProvider;
+import com.practice.exception.BadRequestException;
 import com.practice.repository.*;
-import com.practice.req.AccountCreateReq;
-import com.practice.req.AccountUpdateReq;
-import com.practice.req.StudentCreateReq;
-import com.practice.req.TeacherCreateReq;
+import com.practice.req.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -47,25 +45,54 @@ public class AccountServiceImpl implements AccountService {
         this.courseRepo = courseRepo;
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Account account = accountRepo.findByUsername(username);
-//
-//        if (account == null) {
-//            throw new UsernameNotFoundException("Account Not Found");
-//        }
-//
-//        return new User(username, account.getPassword(),
-//                AuthorityUtils.createAuthorityList("ROLE_" + account.getRole()));
-//    }
-@Override
-public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Account account = accountRepo.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("Account not found"));
 
-    return new User(username, account.getPassword(),
-            AuthorityUtils.createAuthorityList("ROLE_" + account.getRole()));
-}
+    @Override
+    public Account changePassword(String jwt, ChangePasswordReq changePasswordReq) {
+        try {
+            Account account = findAccountByJwtToken(jwt);
+
+            if (!passwordEncoder.matches(changePasswordReq.getOldPassword(), account.getPassword())) {
+                throw new BadRequestException("Mật khẩu cũ không chính xác");
+            }
+
+            // Kiểm tra tính mạnh mẽ của mật khẩu mới
+            if (!isValidPassword(changePasswordReq.getNewPassword())) {
+                throw new BadRequestException("Mật khẩu mới không hợp lệ");
+            }
+
+            account.setPassword(passwordEncoder.encode(changePasswordReq.getNewPassword()));
+            accountRepo.save(account);
+            return account;
+
+        } catch (Exception e) {
+            // Xử lý ngoại lệ tại đây (ví dụ: ghi log, ném ra lỗi chi tiết hơn, v.v.)
+            throw new RuntimeException("Đã xảy ra lỗi khi thay đổi mật khẩu: " + e.getMessage(), e);
+        }
+    }
+
+
+
+
+
+    //kiểm tra có hợp lệ
+    private boolean isValidPassword(String password) {
+        return password.length() >= 6 &&
+                password.matches(".*[A-Z].*") &&
+                password.matches(".*[a-z].*") &&
+                password.matches(".*\\d.*");
+    }
+
+
+
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountRepo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+
+        return new User(username, account.getPassword(),
+                AuthorityUtils.createAuthorityList("ROLE_" + account.getRole()));
+    }
 
     @Override
     public List<Account> getAccountsByRole(EnumRole role) {
@@ -214,57 +241,57 @@ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundEx
         account.setBirthday(teacherCreateReq.getBirthday());
         account.setGender(teacherCreateReq.getGender());
         account.setAddress(teacherCreateReq.getAddress());
-        account.setUuid(UUID.randomUUID().toString());
         account.setNote(teacherCreateReq.getNote());
-        account.setStudentCode(teacherCreateReq.getTeacherCode());
+        account.setUuid(UUID.randomUUID().toString());
+        account.setTeacherCode(teacherCreateReq.getTeacherCode());
 
         // Gán role từ request
         account.setRole(teacherCreateReq.getRole());
 
-        // Tìm Field
+        // Gán Field
         Field field = fieldRepo.findById(teacherCreateReq.getFieldId())
-                .orElseThrow(() -> new RuntimeException("Industry not found"));
+                .orElseThrow(() -> new RuntimeException("Field not found"));
         account.setField(field);
 
-        CourseEntity courseEntity = courseRepo.findById(teacherCreateReq.getCourseId())
-                .orElseThrow(() -> new RuntimeException("course not found"));
-        account.setCourseEntity(courseEntity);
-
+        // Gán Course
+        CourseEntity course = courseRepo.findById(teacherCreateReq.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+        account.setCourseEntity(course);
 
         account.setActive(true);
         return accountRepo.save(account);
     }
 
     @Override
-    public Account updateTeacher(TeacherCreateReq teacherCreateReq, int id) {
+    public Account updateTeacher(TeacherUpdateReq teacherUpdateReq, int id) {
         Account account = accountRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
-        // Update teacher fields
-        account.setUsername(teacherCreateReq.getUsername());
-        account.setPassword(passwordEncoder.encode(teacherCreateReq.getPassword()));
-        account.setFullName(teacherCreateReq.getFullName());
-        account.setEmail(teacherCreateReq.getEmail());
-        account.setPhone(teacherCreateReq.getPhone());
-        account.setAvatar(teacherCreateReq.getAvatar());
-        account.setBirthday(teacherCreateReq.getBirthday());
-        account.setGender(teacherCreateReq.getGender());
-        account.setAddress(teacherCreateReq.getAddress());
-        account.setNote(teacherCreateReq.getNote());
-        account.setStudentCode(teacherCreateReq.getTeacherCode());
+        account.setUsername(teacherUpdateReq.getUsername());
+        account.setPassword(passwordEncoder.encode(teacherUpdateReq.getPassword()));
+        account.setFullName(teacherUpdateReq.getFullName());
+        account.setEmail(teacherUpdateReq.getEmail());
+        account.setPhone(teacherUpdateReq.getPhone());
+        account.setAvatar(teacherUpdateReq.getAvatar());
+        account.setBirthday(teacherUpdateReq.getBirthday());
+        account.setGender(teacherUpdateReq.getGender());
+        account.setAddress(teacherUpdateReq.getAddress());
+        account.setNote(teacherUpdateReq.getNote());
+        account.setTeacherCode(teacherUpdateReq.getTeacherCode());
 
-        // Update role
-        account.setRole(teacherCreateReq.getRole());
+        // Gán role và uuid mới (nếu cần)
+        account.setRole(teacherUpdateReq.getRole());
+        account.setUuid(UUID.randomUUID().toString());
 
-        // Update relationships
-        Field field = fieldRepo.findById(teacherCreateReq.getFieldId())
-                .orElseThrow(() -> new RuntimeException("Industry not found"));
+        // Cập nhật Field
+        Field field = fieldRepo.findById(teacherUpdateReq.getFieldId())
+                .orElseThrow(() -> new RuntimeException("Field not found"));
         account.setField(field);
 
-        // Update course
-        CourseEntity courseEntity = courseRepo.findById(teacherCreateReq.getCourseId())
+        // Cập nhật Course
+        CourseEntity course = courseRepo.findById(teacherUpdateReq.getCourseId())
                 .orElseThrow(() -> new RuntimeException("Course not found"));
-        account.setCourseEntity(courseEntity);
+        account.setCourseEntity(course);
 
         return accountRepo.save(account);
     }
