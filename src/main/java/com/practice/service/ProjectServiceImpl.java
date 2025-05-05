@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
 
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,27 +30,31 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ModelMapper modelMapper;
 
+
     @Override
-    public ProjectDTO createProject(ProjectCreateReq projectCreateReq) {
-        // Tạo mới dự án
+    public ProjectDTO createProject(ProjectCreateReq req) {
         Project project = new Project();
-        project.setProjectName(projectCreateReq.getProjectName());
-        project.setDescription(projectCreateReq.getDescription());
-        project.setContent(projectCreateReq.getContent());
-        project.setStatus(projectCreateReq.getStatus());
+        project.setProjectName(req.getProjectName());
+        project.setDescription(req.getDescription());
+        project.setContent(req.getContent());
+        project.setStatus(req.getStatus());
 
-
-        // Lặp qua danh sách Criteria và thêm pr project
-        for (CriteriaCreateReq criteriaCreateReq : projectCreateReq.getCriteria()) {
-            Criteria newCrit = new Criteria();
-            newCrit.setCriteriaName(criteriaCreateReq.getCriteriaName());
-            newCrit.setProject(project);
-            project.getCriteria().add(newCrit);
+        List<Criteria> criteriaList = new ArrayList<>();
+        for (CriteriaCreateReq c : req.getCriteria()) {
+            Criteria criteria = new Criteria();
+            criteria.setCriteriaName(c.getCriteriaName());
+            criteria.setProject(project); // rất quan trọng!
+            criteriaList.add(criteria);
         }
+        project.setCriteria(criteriaList);
 
-        Project savedProject = projectRepository.save(project);
-        return modelMapper.map(savedProject, ProjectDTO.class);
+        Project saved = projectRepository.save(project);
+
+        // map saved sang DTO
+        return modelMapper.map(saved, ProjectDTO.class);
+
     }
+
 
     @Override
     public ProjectDTO updateProject(Integer id, ProjectUpdateReq projectUpdateReq) {

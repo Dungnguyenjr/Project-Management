@@ -39,13 +39,15 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền thực hiện hành động này");
         }
         try {
-            ProjectDTO newProject = projectService.createProject(projectCreateReq);
-            return new ResponseEntity<>(newProject, HttpStatus.CREATED);
+            ProjectDTO createdProject = projectService.createProject(projectCreateReq);
+            return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            log.error("Error creating project: ", e);
+            log.error("Lỗi  tạo mới dự án : ", e);
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProject(@PathVariable Integer id, @RequestBody ProjectUpdateReq projectUpdateReq) {
@@ -56,7 +58,7 @@ public class ProjectController {
             ProjectDTO updatedProject = projectService.updateProject(id, projectUpdateReq);
             return new ResponseEntity<>(updatedProject, HttpStatus.OK);
         } catch (RuntimeException e) {
-            log.error("Error updating project with id {}: ", id, e);
+            log.error("lỗi khi sửa dự án của id {}: ", id, e);
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
@@ -70,7 +72,7 @@ public class ProjectController {
             projectService.deleteProject(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            log.error("Error deleting project with id {}: ", id, e);
+            log.error("Lỗi khi sửa dự án với id {}: ", id, e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

@@ -1,11 +1,13 @@
 package com.practice.controller;
 
+import com.practice.repository.BatchRepository;
 import com.practice.req.BatchCreatReq;
 import com.practice.entity.BatchEntity;
 import com.practice.req.BatchUpdateReq;
 import com.practice.service.BatchService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,35 +25,30 @@ import java.util.List;
 public class BatchController {
 
     final BatchService batchService;
+    @Autowired
+    private BatchRepository batchRepo;
 
     public BatchController(BatchService batchService) {
         this.batchService = batchService;
     }
 
-    // Phương thức tạo batch chỉ cho phép admin
+
     @PostMapping("create")
     public ResponseEntity<?> createBatch(@Valid @RequestBody BatchCreatReq request) {
         try {
-            // Lấy thông tin người dùng từ SecurityContext
+            // Lấy thông tin người dùng
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            // Kiểm tra vai trò của người dùng (admin)
             if (authentication == null || !authentication.getAuthorities().stream()
                     .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Collections.singletonMap("message", "Bạn không có quyền thực hiện hành động này"));
             }
 
-            // Kiểm tra tên và năm đã tồn tại
-            BatchEntity nameAlready = batchService.getBatchByName(request.getName());
-            if (nameAlready != null) {
+            BatchEntity existingBatch = batchRepo.findByNameAndYear(request.getName(), request.getYear());
+            if (existingBatch != null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(Collections.singletonMap("message", "Tên đợt đã tồn tại! Vui lòng nhập lại tên khác."));
-            }
-            BatchEntity yearAlready = batchService.getBatchByYear(request.getYear());
-            if (yearAlready != null) {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(Collections.singletonMap("message", "Năm đã tồn tại! Vui lòng nhập lại năm khác."));
+                        .body(Collections.singletonMap("message", "Tên đợt đã tồn tại cho năm này! Vui lòng nhập lại."));
             }
 
             // Tạo đợt mới

@@ -26,12 +26,12 @@ public class GroupReportController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createReport(@RequestBody GroupReportReq request) {
+    public ResponseEntity<?> createReport(@RequestBody GroupReportReq groupReportReq) {
         if (!hasRoleTeacher()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Bạn không có quyền thực hiện hành động này");
         }
-        GroupReportDTO createdReport = groupReportService.createReport(request);
+        GroupReportDTO createdReport = groupReportService.createReport(groupReportReq);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
     }
 

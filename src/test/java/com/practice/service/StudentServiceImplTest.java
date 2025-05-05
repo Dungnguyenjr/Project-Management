@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -23,9 +22,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceImplTest {
@@ -50,67 +48,69 @@ public class StudentServiceImplTest {
 
     @Test
     public void saveAccountTest() {
-        StudentCreateReq studentCreateReq = new StudentCreateReq();
-        studentCreateReq.setUsername("testuser");
-        studentCreateReq.setPassword("password");
-        studentCreateReq.setFullName("Test User");
-        studentCreateReq.setEmail("testuser@example.com");
-        studentCreateReq.setPhone("123456789");
-        studentCreateReq.setRole(EnumRole.STUDENT);
-        studentCreateReq.setAvatar("avatar.png");
-        studentCreateReq.setUuid(UUID.randomUUID().toString());
-        studentCreateReq.setBirthday(new Date());
-        studentCreateReq.setGender(EnumGender.MALE);
-        studentCreateReq.setAddress("Test Address");
-        studentCreateReq.setNote("Test note");
-        studentCreateReq.setStudentCode("S12345");
-        studentCreateReq.setFieldId(1L);
-        studentCreateReq.setClassEntityId(1);
-        studentCreateReq.setBatchEntityId(1L);
+        // Setup request
+        StudentCreateReq req = new StudentCreateReq();
+        req.setUsername("testuser");
+        req.setPassword("password");
+        req.setFullName("Test User");
+        req.setEmail("testuser@example.com");
+        req.setPhone("123456789");
+        req.setRole(EnumRole.STUDENT);
+        req.setAvatar("avatar.png");
+        req.setUuid(UUID.randomUUID().toString());
+        req.setBirthday(new Date());
+        req.setGender(EnumGender.MALE);
+        req.setAddress("Test Address");
+        req.setNote("Test note");
+        req.setStudentCode("S12345");
+        req.setFieldId(1L);
+        req.setClassEntityId(1);
+        req.setBatchEntityId(1L);
 
-
+        // Setup entities
         Field field = new Field();
         ClassEntity classEntity = new ClassEntity();
         BatchEntity batchEntity = new BatchEntity();
 
+        // Mock repositories
         when(fieldRepo.findById(1L)).thenReturn(Optional.of(field));
         when(classRepo.findById(1)).thenReturn(Optional.of(classEntity));
         when(batchRepo.findById(1L)).thenReturn(Optional.of(batchEntity));
-        when(passwordEncoder.encode("password")).thenReturn("$2a$12$1fF5H5k7.kGPJr.rRAXMcuF3z3pEhPkv.I5lR4ZNnpFRtnhCBNJ0y");
+        when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
 
-        // Tạo đối tượng Account sau khi save
-        Account accountResult = new Account();
-        accountResult.setId(1);
-        accountResult.setUsername(studentCreateReq.getUsername());
-        accountResult.setPassword("$2a$12$1fF5H5k7.kGPJr.rRAXMcuF3z3pEhPkv.I5lR4ZNnpFRtnhCBNJ0y");
-        accountResult.setFullName(studentCreateReq.getFullName());
-        accountResult.setEmail(studentCreateReq.getEmail());
-        accountResult.setPhone(studentCreateReq.getPhone());
-        accountResult.setAvatar(studentCreateReq.getAvatar());
-        accountResult.setBirthday(studentCreateReq.getBirthday());
-        accountResult.setAddress(studentCreateReq.getAddress());
-        accountResult.setUuid(UUID.randomUUID().toString());
-        accountResult.setStudentCode(studentCreateReq.getStudentCode());
-        accountResult.setField(field);
-        accountResult.setClassEntity(classEntity);
-        accountResult.setBatchEntity(batchEntity);
-        accountResult.setActive(true);
+        // Expected account result
+        Account savedEntity = new Account();
+        savedEntity.setId(1);
+        savedEntity.setUsername(req.getUsername());
+        savedEntity.setPassword("encodedPassword");
+        savedEntity.setFullName(req.getFullName());
+        savedEntity.setEmail(req.getEmail());
+        savedEntity.setPhone(req.getPhone());
+        savedEntity.setAvatar(req.getAvatar());
+        savedEntity.setBirthday(req.getBirthday());
+        savedEntity.setAddress(req.getAddress());
+        savedEntity.setUuid(req.getUuid());
+        savedEntity.setStudentCode(req.getStudentCode());
+        savedEntity.setField(field);
+        savedEntity.setClassEntity(classEntity);
+        savedEntity.setBatchEntity(batchEntity);
+        savedEntity.setActive(true);
 
-        when(accountRepo.save(Mockito.any(Account.class))).thenReturn(accountResult);
+        when(accountRepo.save(any(Account.class))).thenReturn(savedEntity);
 
+        // Act
+        Account savedAccount = accountService.saveAccount(req);
 
-        String Password = "312sd7893knkfnkdkfsk998e20398d1209312093u1bdsdsdbd";
-        String Username = "teststd";
-        String Phone = "123456789";
-        String Email = "testuser@email.com";
-        Account savedAccount = accountService.saveAccount(studentCreateReq);
-
-
+        // Assert
         assertNotNull(savedAccount);
-        assertEquals(Password, savedAccount.getPassword());
-        assertEquals(Username, savedAccount.getUsername());
-        assertEquals(Phone, savedAccount.getPhone());
-        assertEquals(Email, savedAccount.getEmail());
+        assertEquals(req.getUsername(), savedAccount.getUsername());
+        assertEquals(req.getEmail(), savedAccount.getEmail());
+        assertEquals(req.getPhone(), savedAccount.getPhone());
+        assertEquals(req.getFullName(), savedAccount.getFullName());
+        assertEquals("encodedPassword", savedAccount.getPassword()); // check password is encoded
+        assertEquals("S12345", savedAccount.getStudentCode());
+        assertEquals(field, savedAccount.getField());
+        assertEquals(classEntity, savedAccount.getClassEntity());
+        assertEquals(batchEntity, savedAccount.getBatchEntity());
     }
-
 }

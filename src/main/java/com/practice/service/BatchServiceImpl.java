@@ -20,12 +20,13 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
-    public  BatchEntity getBatchByYear(String year) {
+    public List<BatchEntity> getBatchByYear(String year) {
         return batchRepo.findBatchEntitiesByYear(year);
     }
 
+
     @Override
-    public BatchEntity getBatchByName(String name) {
+    public List<BatchEntity> getBatchByName(String name) {
         return batchRepo.findBatchEntitiesByName(name);
     }
 

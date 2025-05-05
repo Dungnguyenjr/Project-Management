@@ -11,9 +11,9 @@ public interface BatchService {
 
     BatchEntity createBatch(BatchCreatReq batchCreatReq);
 
-    BatchEntity getBatchByYear(String year);
+    List<BatchEntity> getBatchByYear(String year);
 
-    BatchEntity getBatchByName(String name);
+    List<BatchEntity> getBatchByName(String name);
 
     BatchEntity updateBatch(Long id, BatchUpdateReq batchUpdateReq);
 

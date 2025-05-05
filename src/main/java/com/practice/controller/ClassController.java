@@ -26,20 +26,20 @@ public class ClassController {
     @Autowired
     private ClassService classService;
 
-    // Phương thức tìm kiếm lớp theo tên (không yêu cầu quyền admin)
+
     @GetMapping("/search-name")
     public List<ClassDTO> searchClassName(@RequestParam(required = false) String className) {
         return classService.findByClassName(className);
     }
 
-    // Phương thức lấy tất cả các lớp (không yêu cầu quyền admin)
+
     @GetMapping("/all")
     public List<ClassDTO> getAllClass() {
         log.info("Get all class");
         return classService.getAllClass();
     }
 
-    // Phương thức lấy lớp theo phân trang (không yêu cầu quyền admin)
+
     @GetMapping("/page")
     public Page<ClassDTO> getPage(@RequestParam(required = false, defaultValue = "1") int page,
                                   @RequestParam(required = false, defaultValue = "10") int size) {

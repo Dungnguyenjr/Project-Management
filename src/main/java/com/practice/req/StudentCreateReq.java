@@ -41,4 +41,6 @@ public class StudentCreateReq {
     private int classEntityId;
 
     private long batchEntityId;
+
+
 }

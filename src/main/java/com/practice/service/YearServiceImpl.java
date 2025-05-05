@@ -14,6 +14,7 @@ import com.practice.req.YearUpdateReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -86,18 +87,24 @@ public class YearServiceImpl implements YearService{
         ProjectDTO dto = new ProjectDTO();
         dto.setId(p.getId());
         dto.setProjectName(p.getProjectName());
-        dto.setDescription(p.getDescription()); // Lấy thêm description
-        dto.setContent(p.getContent()); // Lấy thêm content
-        dto.setStatus(p.getStatus()); // Lấy thêm status
+        dto.setDescription(p.getDescription());
+        dto.setContent(p.getContent());
+        dto.setStatus(p.getStatus());
 
-        // Nếu cần thiết, bạn có thể lấy thêm các thông tin về "criteria"
-        dto.setCriteria(p.getCriteria().stream().map(c -> {
-            // Chuyển đổi thông tin về criteria nếu cần
-            return new CriteriaDTO(c.getId(), c.getCriteriaName());
-        }).toList());
+        if (p.getCriteria() != null) {
+            dto.setCriteria(p.getCriteria().stream().map(c -> {
+                CriteriaDTO criteriaDTO = new CriteriaDTO();
+                criteriaDTO.setId(c.getId());
+                criteriaDTO.setCriteriaName(c.getCriteriaName());
+                return criteriaDTO;
+            }).toList());
+        } else {
+            dto.setCriteria(new ArrayList<>());
+        }
 
         return dto;
     }
+
 
 
 
