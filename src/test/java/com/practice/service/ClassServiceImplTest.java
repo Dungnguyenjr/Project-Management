@@ -16,8 +16,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ClassServiceImplTest {
+public class ClassServiceImplTest {
 
     @Mock
     private ClassRepository classRepo;
@@ -71,16 +71,23 @@ class ClassServiceImplTest {
         classCreateReq.setClassName("TH26.12");
         classCreateReq.setCourse("k26");
 
-        // Mock dữ liệu lưu vào repository
-        when(classRepo.save(any(ClassEntity.class))).thenReturn(classEntityResult);
-        when(mapper.map(any(), any())).thenReturn(classDTO);
+        ClassEntity savedEntity = new ClassEntity();
+        savedEntity.setClassName("TH26.12");
+        savedEntity.setCourse("k26");
 
-        // Gọi service và kiểm tra kết quả
+        ClassDTO expectedDTO = new ClassDTO();
+        expectedDTO.setClassName("TH26.12");
+        expectedDTO.setCourse("k26");
+
+        when(classRepo.save(any(ClassEntity.class))).thenReturn(savedEntity);
+        when(mapper.map(any(ClassEntity.class), eq(ClassDTO.class))).thenReturn(expectedDTO);
+
         ClassDTO createdClass = classService.createClass(classCreateReq);
 
         assertEquals("TH26.12", createdClass.getClassName());
-        assertEquals("k25", createdClass.getCourse());  // Chú ý: Đảm bảo tên lớp chính xác khi mock.
+        assertEquals("k26", createdClass.getCourse());
     }
+
 
     @Test
     void updateClass() {
@@ -147,6 +154,20 @@ class ClassServiceImplTest {
 
         assertEquals(1, allClasses.size());  // Kiểm tra số lớp
         assertEquals("TH25.11", allClasses.get(0).getClassName());  // Kiểm tra tên lớp
+    }
+    @Test
+    void getPage() {
+        int page = 0, size = 1;
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Page<ClassEntity> mockPage = new PageImpl<>(classEntityList, pageable, classEntityList.size());
+        when(classRepo.findAll(pageable)).thenReturn(mockPage);
+        when(mapper.map(any(ClassEntity.class), eq(ClassDTO.class))).thenReturn(classDTO);
+
+        Page<ClassDTO> result = classService.getPage(page, size);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("TH25.11", result.getContent().get(0).getClassName());
     }
 
 

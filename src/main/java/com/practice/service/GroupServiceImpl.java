@@ -256,11 +256,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         group.setMembers(members);
-
-        // Lưu lại nhóm đã sửa
         GroupEntity savedGroup = groupRepo.save(group);
-
-        // Chuyển đổi sang DTO
         GroupDTO dto = modelMapper.map(savedGroup, GroupDTO.class);
 
         List<StudentGroupDTO> studentDTOs = savedGroup.getMembers()
@@ -283,10 +279,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void deleteGroup(long id) {
-        // Tìm nhóm theo ID
         GroupEntity group = groupRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Group not found"));
-
-        // Xóa nhóm (vẫn giữ lại các account liên kết)
         groupRepo.delete(group);
     }
 
@@ -294,25 +287,3 @@ public class GroupServiceImpl implements GroupService {
 
 }
 
-//ghi nhớ
-//        "pageable": {
-//                "pageNumber": 0,       // Trang hiện tại (bắt đầu từ 0)
-//                "pageSize": 10,        // Số phần tử mỗi trang
-//                "offset": 0,           // Vị trí bắt đầu trong danh sách tổng (0 = phần tử đầu tiên)
-//                "paged": true,         // Có sử dụng phân trang
-//                "unpaged": false,      // Không phải là truy vấn không phân trang
-//                "sort": {
-//                "empty": true,       // Không sắp xếp
-//                "sorted": false,
-//                "unsorted": true
-//                }
-//                }
-// cá trường ngoài "last": true,               // Đây là trang cuối cùng
-//                "totalElements": 3,         // Tổng số phần tử tìm được (tổng nhóm)
-//                "totalPages": 1,            // Tổng số trang (vì có 3 nhóm và pageSize = 10 => chỉ cần 1 trang)
-//                "size": 10,                 // Kích thước mỗi trang (pageSize = 10)
-//                "number": 0,                // Trang hiện tại (trang đầu là 0)
-//                "first": true,              // Đây là trang đầu tiên
-//                "numberOfElements": 3,      // Số phần tử trong trang hiện tại (3 nhóm)
-//                "empty": false              // Trang này không rỗng
-//
