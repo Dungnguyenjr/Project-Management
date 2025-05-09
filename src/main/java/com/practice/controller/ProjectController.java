@@ -48,7 +48,6 @@ public class ProjectController {
     }
 
 
-
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProject(@PathVariable Integer id, @RequestBody ProjectUpdateReq projectUpdateReq) {
         if (!hasRoleTeacher()) {

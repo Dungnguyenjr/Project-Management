@@ -22,7 +22,8 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping()
-    public ResponseEntity<Account> createUser(@RequestBody AccountCreateReq accountCreateReq, @RequestHeader("Authorization") String jwt) throws Exception {
+    public ResponseEntity<Account> createUser(@RequestBody AccountCreateReq accountCreateReq,
+                                              @RequestHeader("Authorization") String jwt) throws Exception {
         accountService.findAccountByJwtToken(jwt);
         Account createAccount = accountService.createAccount(accountCreateReq);
         return new ResponseEntity<>(createAccount, HttpStatus.OK);
@@ -37,7 +38,8 @@ public class AccountController {
     }
 
     @DeleteMapping("/deleteAccount/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id , @RequestHeader("Authorization") String jwt )throws Exception{
+    public ResponseEntity<?> deleteUser(@PathVariable int id ,
+                                        @RequestHeader("Authorization") String jwt )throws Exception{
         accountService.findAccountByJwtToken(jwt);
         accountService.deleteAccount(id);
         return new ResponseEntity<>("Xoa thanh cong",HttpStatus.OK);

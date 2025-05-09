@@ -73,10 +73,10 @@ public class AccountServiceImplTest {
 
         when(accountRepo.save(Mockito.any(Account.class))).thenReturn(savedEntity);
 
-        // Act
+
         Account savedAccount = accountService.createAccount(req);
 
-        // Assert
+
         assertNotNull(savedAccount);
         assertEquals(req.getUsername(), savedAccount.getUsername());
         assertEquals(req.getEmail(), savedAccount.getEmail());

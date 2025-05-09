@@ -8,4 +8,6 @@ public class ClassUpdateReq {
     private String className;
 
     private String course;
+
+    private int courseId;
 }

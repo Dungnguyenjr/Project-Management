@@ -18,12 +18,12 @@ public class ConfigSwagger {
     public OpenAPI openAPI() {
         Server prodServer = new Server();
         prodServer.setUrl("");
-        prodServer.setDescription("Server chạy hệ thống quản lý đồ án tốt nghiệp");
+        prodServer.setDescription("Server hệ thống quản lý đồ án tốt nghiệp");
 
         Contact contact = new Contact();
         contact.setEmail("ngvietdung23k1@gmail.com");
         contact.setName("Nguyễn Việt Dũng");
-        contact.setUrl("https://github.com/Dungnguyenjr");
+        contact.setUrl("https://github.com/Dungnguyenjr/Project-Management");
 
         License mitLicense = new License()
                 .name("MIT License")
@@ -34,7 +34,7 @@ public class ConfigSwagger {
                 .version("1.0")
                 .contact(contact)
                 .description("Tài liệu API cho hệ thống quản lý đồ án tốt nghiệp. Hệ thống hỗ trợ sinh viên, giảng viên và quản trị viên trong việc đăng ký, phân công và theo dõi tiến độ đồ án.")
-                .termsOfService("https://github.com/Dungnguyenjr")
+                .termsOfService("https://www.bezkoder.com/terms")
                 .license(mitLicense);
 
         return new OpenAPI().info(info).servers(List.of(prodServer));

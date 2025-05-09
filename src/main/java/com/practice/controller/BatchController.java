@@ -33,25 +33,20 @@ public class BatchController {
     }
 
 
-    @PostMapping("create")
+    @PostMapping("")
     public ResponseEntity<?> createBatch(@Valid @RequestBody BatchCreatReq request) {
         try {
-            // Lấy thông tin người dùng
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
             if (authentication == null || !authentication.getAuthorities().stream()
                     .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Collections.singletonMap("message", "Bạn không có quyền thực hiện hành động này"));
             }
-
             BatchEntity existingBatch = batchRepo.findByNameAndYear(request.getName(), request.getYear());
             if (existingBatch != null) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(Collections.singletonMap("message", "Tên đợt đã tồn tại cho năm này! Vui lòng nhập lại."));
             }
-
-            // Tạo đợt mới
             BatchEntity response = batchService.createBatch(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("message", response));
         } catch (Exception e) {
@@ -59,11 +54,9 @@ public class BatchController {
         }
     }
 
-    // Phương thức cập nhật batch chỉ cho phép admin
-    @PutMapping("update")
+    @PutMapping("")
     public ResponseEntity<?> updateBatch(@Valid @RequestParam("id") Long id, @Valid @RequestBody BatchUpdateReq batchUpdateReq) {
         try {
-            // Kiểm tra vai trò của người dùng (admin)
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.getAuthorities().stream()
                     .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {

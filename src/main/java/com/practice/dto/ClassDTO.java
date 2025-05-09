@@ -14,4 +14,6 @@ public class ClassDTO {
     private String className;
 
     private String course;
+
+    private int courseId;
 }

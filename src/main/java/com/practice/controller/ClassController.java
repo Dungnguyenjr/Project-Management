@@ -52,10 +52,9 @@ public class ClassController {
         return classService.getPage(page, size);
     }
 
-    // Phương thức tạo lớp chỉ cho phép ADMIN
+
     @PostMapping
     public ResponseEntity<?> createClass(@RequestBody ClassCreateReq classCreateReq) {
-        // Kiểm tra quyền ADMIN
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
@@ -67,10 +66,8 @@ public class ClassController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdClass);
     }
 
-    // Phương thức cập nhật lớp chỉ cho phép ADMIN
     @PutMapping("/{id}")
     public ResponseEntity<?> updateClass(@PathVariable int id, @RequestBody ClassUpdateReq classUpdateReq) {
-        // Kiểm tra quyền ADMIN
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {

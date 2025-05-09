@@ -2,7 +2,9 @@ package com.practice.service;
 
 import com.practice.dto.ClassDTO;
 import com.practice.entity.ClassEntity;
+import com.practice.entity.CourseEntity;
 import com.practice.repository.ClassRepository;
+import com.practice.repository.CourseRepository;
 import com.practice.req.ClassCreateReq;
 import com.practice.req.ClassUpdateReq;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +26,9 @@ public class ClassServiceImpl implements ClassService {
 
     @Autowired
     private ClassRepository classRepo;
+
+    @Autowired
+    private CourseRepository courseRepo;
 
     @Override
     public List<ClassDTO> findByClassName(String className) {
@@ -67,6 +72,11 @@ public class ClassServiceImpl implements ClassService {
         ClassEntity classEntity = new ClassEntity();
         classEntity.setClassName(classCreateReq.getClassName());
         classEntity.setCourse(classCreateReq.getCourse());
+
+        CourseEntity courseEntity = courseRepo.findById(classCreateReq.getCourseId())
+                .orElseThrow(() -> new EntityNotFoundException("Course không tồn tại với id: " + classCreateReq.getCourseId()));
+        classEntity.setCourseEntity(courseEntity);
+
         return modelMapper.map(classRepo.save(classEntity), ClassDTO.class);
     }
 

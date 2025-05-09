@@ -32,7 +32,6 @@ public class CourseController {
     // Phương thức tạo khóa học mới chỉ cho phép ADMIN
     @PostMapping
     public ResponseEntity<?> createCourse(@RequestBody CourseCreatReq courseCreatReq) {
-        // Kiểm tra quyền ADMIN
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
@@ -47,7 +46,6 @@ public class CourseController {
     // Phương thức cập nhật khóa học chỉ cho phép ADMIN
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCourse(@PathVariable int id, @RequestBody CourseUpdateReq courseUpdateReq) {
-        // Kiểm tra quyền ADMIN
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {

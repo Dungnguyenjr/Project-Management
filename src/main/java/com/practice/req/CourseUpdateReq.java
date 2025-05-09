@@ -9,5 +9,7 @@ public class CourseUpdateReq {
     private int id;
 
     private String courseName;
-    private List<ClassDTO> classEntities;
+    private int startYear;
+
+
 }

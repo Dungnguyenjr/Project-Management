@@ -19,19 +19,19 @@ public class GroupReportController {
     @Autowired
     private GroupReportService groupReportService;
 
-    private boolean hasRoleTeacher() {
+    private boolean hasRoleStudent() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_TEACHER"));
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_STUDENT"));
     }
 
     @PostMapping
-    public ResponseEntity<?> createReport(@RequestBody GroupReportReq groupReportReq) {
-        if (!hasRoleTeacher()) {
+    public ResponseEntity<?> createReport(@RequestBody GroupReportReq request) {
+        if (!hasRoleStudent()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Bạn không có quyền thực hiện hành động này");
         }
-        GroupReportDTO createdReport = groupReportService.createReport(groupReportReq);
+        GroupReportDTO createdReport = groupReportService.createReport(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
     }
 

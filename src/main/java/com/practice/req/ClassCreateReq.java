@@ -8,4 +8,6 @@ public class ClassCreateReq {
     private String className;
 
     private String course;
+
+    private int courseId;
 }
